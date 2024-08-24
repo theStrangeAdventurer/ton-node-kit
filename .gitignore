@@ -1,0 +1,8 @@
+# test log files
+*.log
+
+# build folder
+build
+
+# modules
+node_modules

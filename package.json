@@ -1,0 +1,46 @@
+{
+  "name": "ton-node-kit",
+  "version": "0.1.0",
+  "description": "Useful utilities for working with TON in NodeJS",
+  "main": "build/index.js",
+  "types": "build/index.d.ts",
+  "scripts": {
+    "build": "rm -rf ./build && ./node_modules/typescript/bin/tsc -p tsconfig.json",
+    "test": "jest"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git@github.com:theStrangeAdventurer/ton-node-kit.git"
+  },
+  "files": [
+    "build"
+  ],
+  "keywords": [
+    "ton",
+    "tx-comment",
+    "ton-retry"
+  ],
+  "author": "",
+  "license": "MIT",
+  "devDependencies": {
+    "@ton/ton": "^15.x",
+    "@types/jest": "^29.5.2",
+    "@types/node": "^20.2.5",
+    "@typescript-eslint/eslint-plugin": "^5.59.8",
+    "@typescript-eslint/parser": "^5.59.8",
+    "dotenv": "^16.4.5",
+    "eslint": "^8.41.0",
+    "eslint-config-prettier": "^8.8.0",
+    "eslint-plugin-prettier": "^4.2.1",
+    "eslint-plugin-simple-import-sort": "^10.0.0",
+    "eslint-plugin-unused-imports": "^2.0.0",
+    "prettier": "^2.8.8",
+    "ts-jest": "^29.1.0",
+    "ts-node": "^",
+    "tsconfig-paths": "^4.2.0",
+    "typescript": "^5.0.4"
+  },
+  "peerDependencies": {
+    "@ton/ton": "^15.x"
+  }
+}
