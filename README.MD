@@ -32,6 +32,7 @@ const client = new TonClient({
 
 const TRANSACTION_LIMIT = 1;
 const RETRY_LIMIT = 30;
+const RETRY_DELAY_MS = 100;
 
 const getTransactions = async () => {
   return (await withRetry(
@@ -40,7 +41,7 @@ const getTransactions = async () => {
         limit: TRANSACTION_LIMIT,
       }),
     RETRY_LIMIT,
-    100,
+    RETRY_DELAY_MS,
   )) as Transaction[];
 };
 
