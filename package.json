@@ -1,10 +1,12 @@
 {
   "name": "ton-node-kit",
-  "version": "0.1.0",
+  "version": "0.2.0",
   "description": "Useful utilities for working with TON in NodeJS",
   "main": "build/index.js",
   "types": "build/index.d.ts",
   "scripts": {
+    "dev-pack": "npm run build && npm pack",
+    "prepublish": "npm run build",
     "build": "rm -rf ./build && ./node_modules/typescript/bin/tsc -p tsconfig.json",
     "test": "jest"
   },

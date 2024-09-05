@@ -1,4 +1,5 @@
 // Import necessary functions and types from @ton/ton
+import type { Address } from '@ton/ton';
 import { fromNano, type Transaction } from '@ton/ton';
 
 /**
@@ -29,12 +30,15 @@ export async function withRetry<T, U>(
 
 /**
  * Retrieves the sender address from a transaction.
- * @param {Transaction} tx The transaction from which to retrieve the sender address.
- * @returns {string | undefined} The sender address, if available.
  */
-export function getTxSender(tx: Transaction) {
+export function getTxSender(tx: Transaction, options: { hex?: boolean } = {}) {
+  const { hex } = options;
   const inMsg = tx.inMessage;
-  return inMsg?.info.src;
+
+  const result = inMsg?.info.src as Address;
+
+  if (hex) return result.toRawString().toString();
+  return result;
 }
 
 type GetTxValueAmountOptions =
@@ -71,6 +75,18 @@ export function getTxValueAmount(
   }
 }
 
+export function checkIsInternal(tx: Transaction) {
+  return tx.inMessage?.info?.type === 'internal';
+}
+
+export function checkIsExternalOut(tx: Transaction) {
+  return tx.inMessage?.info?.type === 'external-out';
+}
+
+export function checkIsExternalIn(tx: Transaction) {
+  return tx.inMessage?.info?.type === 'external-in';
+}
+
 /**
  * Extracts the comment text from a transaction.
  * @param {Transaction} tx The transaction from which to extract the comment.
@@ -80,25 +96,15 @@ export function getTxValueAmount(
 export function getTxComment(tx: Transaction) {
   const originalBody = tx.inMessage?.body.beginParse();
   const body = originalBody?.clone();
-
+  // @ts-expect-error remainingBits exists
+  if (body?.remainingBits < 32) {
+    return '';
+  }
   // Validate operation code
   const op = body?.loadUint(32);
   if (op !== 0) {
     throw new Error("op != 0, can't get tx message");
   }
 
-  const hexString = body?.toString();
-  if (typeof hexString !== 'string')
-    throw new Error(`Expected hex string, got: ${hexString}`);
-
-  // Convert hex string to byte array
-  const byteArray = [];
-  for (let i = 0; i < hexString.length; i += 2) {
-    byteArray.push(parseInt(hexString.substring(i, i + 2), 16));
-  }
-  // Decode the byte array to string using a UTF-8 decoder
-  const decoder = new TextDecoder();
-  const commentText = decoder.decode(new Uint8Array(byteArray));
-  // Trim NULL bytes from the start and end of the comment text
-  return commentText.replace(/^\x00+|\x00+$/g, '');
+  return body!.loadStringTail();
 }

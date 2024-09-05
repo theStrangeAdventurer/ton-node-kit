@@ -21,6 +21,7 @@ import {
   getTxSender,
   getTxValueAmount,
   withRetry,
+  checkIsInternal,
 } from 'ton-node-kit';
 
 const myAddress = Address.parse('<your-wallet-address>');
@@ -39,6 +40,7 @@ const getTransactions = async () => {
     () =>
       client.getTransactions(myAddress, {
         limit: TRANSACTION_LIMIT,
+        archival: true,
       }),
     RETRY_LIMIT,
     RETRY_DELAY_MS,
@@ -48,25 +50,31 @@ const getTransactions = async () => {
 const transactions = await getTransactions();
 
 for (const tx of transactions) {
-  const commentText = getTxComment(tx);
-  const tonValue = getTxValueAmount(tx);
-  const nanoValue = getTxValueAmount(tx, {
-    currency: 'nano',
-    returnBigint: true,
-  });
-  const sender = getTxSender(tx);
+  if (checkIsInternal(tx)) {
+    const commentText = getTxComment(tx);
+    const tonValue = getTxValueAmount(tx);
+    const nanoValue = getTxValueAmount(tx, {
+      currency: 'nano',
+      returnBigint: true,
+    });
+    const sender = getTxSender(tx);
+    const hexAddress = getTxSender(tx, { hex: true });
 
-  console.log('Transaction', {
-    commentText,
-    tonValue,
-    nanoValue,
-    sender,
-  });
+    console.log('Transaction', {
+      commentText,
+      tonValue,
+      nanoValue,
+      sender,
+      hexAddress,
+    });
+  }
+
   // Transaction {
   //   commentText: 'Hello, TON!',
   //   nanoValue: 50000000n,
   //   tonValue: '0.05'
-  //   sender: <sender-wallet-address>
+  //   sender: <sender-object>,
+  //   hexAddress: '0:....'
   // }
 }
 ```
